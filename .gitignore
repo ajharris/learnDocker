@@ -205,3 +205,28 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Docker
+.env
+.env.local
+.env.production
+.env.staging
+docker-compose.override.yml
+
+# Node.js (for examples)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+*.tmp
+*.temp
+/tmp/
+
+# OS and Editor files
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo

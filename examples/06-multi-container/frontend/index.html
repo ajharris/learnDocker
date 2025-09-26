@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Container Docker App</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        .header p { font-size: 1.2rem; opacity: 0.9; }
+        .content {
+            padding: 40px;
+        }
+        .services {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+        .service {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .service:hover { transform: translateY(-5px); }
+        .service h3 { color: #2c3e50; margin-bottom: 15px; }
+        .service p { margin-bottom: 20px; color: #666; }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn:hover { background: #0056b3; }
+        .btn-success { background: #28a745; }
+        .btn-success:hover { background: #1e7e34; }
+        .btn-info { background: #17a2b8; }
+        .btn-info:hover { background: #117a8b; }
+        .api-test {
+            background: #e8f5e8;
+            border: 1px solid #c3e6c3;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        .api-result {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .status { padding: 10px; border-radius: 6px; margin: 10px 0; }
+        .status.success { background: #d4edda; color: #155724; }
+        .status.error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🐳 Multi-Container Docker Application</h1>
+            <p>A complete stack with Nginx, Node.js, PostgreSQL, and Redis</p>
+        </div>
+        
+        <div class="content">
+            <div class="services">
+                <div class="service">
+                    <h3>🌐 Nginx Proxy</h3>
+                    <p>Reverse proxy and static file server</p>
+                    <div class="status success">✅ Active</div>
+                </div>
+                
+                <div class="service">
+                    <h3>🚀 Node.js API</h3>
+                    <p>RESTful API backend service</p>
+                    <a href="/api/health" class="btn" target="_blank">Health Check</a>
+                </div>
+                
+                <div class="service">
+                    <h3>🗄️ PostgreSQL</h3>
+                    <p>Relational database</p>
+                    <a href="http://localhost:5050" class="btn btn-info" target="_blank">pgAdmin</a>
+                </div>
+                
+                <div class="service">
+                    <h3>🔥 Redis Cache</h3>
+                    <p>In-memory data structure store</p>
+                    <div class="status success">✅ Running</div>
+                </div>
+            </div>
+
+            <div class="api-test">
+                <h3>🧪 API Testing</h3>
+                <p>Test the backend API endpoints:</p>
+                
+                <button class="btn" onclick="testAPI('/api/health')">Health Check</button>
+                <button class="btn btn-success" onclick="testAPI('/api/users')">Get Users</button>
+                <button class="btn btn-info" onclick="testAPI('/api/info')">System Info</button>
+                
+                <div id="apiResult" class="api-result" style="display: none;"></div>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <h3>🎯 What You've Learned</h3>
+                <ul style="text-align: left; max-width: 600px; margin: 20px auto;">
+                    <li>✅ Multi-container orchestration with Docker Compose</li>
+                    <li>✅ Service networking and communication</li>
+                    <li>✅ Database integration and initialization</li>
+                    <li>✅ Reverse proxy configuration</li>
+                    <li>✅ Volume management and data persistence</li>
+                    <li>✅ Environment variable configuration</li>
+                    <li>✅ Health checks and service dependencies</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function testAPI(endpoint) {
+            const resultDiv = document.getElementById('apiResult');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `<p>🔄 Testing ${endpoint}...</p>`;
+            
+            try {
+                const response = await fetch(endpoint);
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <h4>✅ ${endpoint}</h4>
+                    <p><strong>Status:</strong> ${response.status} ${response.statusText}</p>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <h4>❌ ${endpoint}</h4>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                `;
+            }
+        }
+
+        // Test API health on page load
+        window.addEventListener('load', () => {
+            setTimeout(() => testAPI('/api/health'), 1000);
+        });
+    </script>
+</body>
+</html>
