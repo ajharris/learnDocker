@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 echo "🐳 Hello, Docker!"
 echo "Container is running successfully!"
 echo "Current date: $(date)"
